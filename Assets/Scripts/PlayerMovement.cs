@@ -5,28 +5,23 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    PlayerInput playerInput;
-    private Rigidbody playerRigidbody;
+    private PlayerInput playerInput;
+    private CharacterController characterController;
     private Animator playerAnimator;
-    public float moveSpeed = 5f;
+
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float gravity = -9.81f;
+
     private Vector2 moveValue;
-    public bool isCarrying; // Taþýma durumunu temsil eden bir bayrak
+    private Vector3 velocity;
+
+    public bool isCarrying;
 
     private void Awake()
     {
         playerInput = new PlayerInput();
-    }
-
-    private void Start()
-    {
+        characterController = GetComponent<CharacterController>();
         playerAnimator = GetComponent<Animator>();
-        playerRigidbody = GetComponent<Rigidbody>();
-    }
-
-    private void Update()
-    {
-        moveValue = playerInput.Player.Move.ReadValue<Vector2>();
-        UpdateAnimation(); // Animasyonlarý güncelle
     }
 
     private void OnEnable()
@@ -39,39 +34,59 @@ public class PlayerMovement : MonoBehaviour
         playerInput.Disable();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        MoveCharacter(moveValue);
+        moveValue = playerInput.Player.Move.ReadValue<Vector2>();
+        HandleMovement();
+        UpdateAnimations();
     }
 
-    private void MoveCharacter(Vector2 direction)
+    private void HandleMovement()
     {
-        if (direction != Vector2.zero)
+        Vector3 moveDirection = new Vector3(moveValue.x, 0, moveValue.y);
+
+        if (moveDirection != Vector3.zero)
         {
-            Vector3 moveDirection = new Vector3(direction.x, 0, direction.y);
-            Vector3 newPosition = playerRigidbody.position + moveDirection * moveSpeed * Time.fixedDeltaTime;
-            playerRigidbody.MovePosition(newPosition);
-
-            // Karakterin yönünü hareket yönüne doðru çevir
-            Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-            playerRigidbody.rotation = Quaternion.RotateTowards(playerRigidbody.rotation, toRotation, 360 * Time.fixedDeltaTime);
+            characterController.Move(moveDirection * moveSpeed * Time.deltaTime);
+            RotateCharacter(moveDirection);
         }
+
+        ApplyGravity();
     }
 
-    private void UpdateAnimation()
+    private void ApplyGravity()
+    {
+        if (!characterController.isGrounded)
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
+        else
+        {
+            velocity.y = 0;
+        }
+
+        characterController.Move(velocity * Time.deltaTime);
+    }
+
+    private void RotateCharacter(Vector3 direction)
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360 * Time.deltaTime);
+    }
+
+    private void UpdateAnimations()
     {
         bool isRunning = moveValue != Vector2.zero;
 
         if (isCarrying)
         {
             playerAnimator.SetBool("IsRunning", false);
-            playerAnimator.SetBool("IsCarrying", isRunning); // Hareket ederken taþýma animasyonu oynat
+            playerAnimator.SetBool("IsCarrying", isRunning);
         }
         else
         {
             playerAnimator.SetBool("IsRunning", isRunning);
             playerAnimator.SetBool("IsCarrying", false);
         }
-
     }
 }
