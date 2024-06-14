@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isCarrying;
 
+
     private void Awake()
     {
         playerInput = new PlayerInput();
@@ -78,10 +79,31 @@ public class PlayerMovement : MonoBehaviour
     {
         bool isRunning = moveValue != Vector2.zero;
 
+        //if (isCarrying)
+        //{
+        //    playerAnimator.SetBool("IsRunning", false);
+        //    playerAnimator.SetBool("IsCarrying", isRunning);
+        //}
+        //else
+        //{
+        //    playerAnimator.SetBool("IsRunning", isRunning);
+        //    playerAnimator.SetBool("IsCarrying", false);
+        //}
+
         if (isCarrying)
         {
-            playerAnimator.SetBool("IsRunning", false);
-            playerAnimator.SetBool("IsCarrying", isRunning);
+            if (moveValue != Vector2.zero)
+            {
+                playerAnimator.SetBool("IsRunning", false);
+                playerAnimator.SetBool("IsCarryingIdle", false);
+                playerAnimator.SetBool("IsCarrying", true);
+            }
+            else
+            {
+                playerAnimator.SetBool("IsRunning", false);
+                playerAnimator.SetBool("IsCarrying", false);
+                playerAnimator.SetBool("IsCarryingIdle", true);
+            }
         }
         else
         {
