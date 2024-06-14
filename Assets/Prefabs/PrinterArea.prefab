@@ -1125,7 +1125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6907141779893431987}
   m_Layer: 0
-  m_Name: PrinterTable
+  m_Name: PrinterArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
