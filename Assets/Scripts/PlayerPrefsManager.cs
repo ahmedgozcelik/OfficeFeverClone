@@ -6,7 +6,7 @@ public class PlayerPrefsManager : MonoBehaviour
 {
     public static PlayerPrefsManager instance;
 
-    private int defaultGold = 200;
+    private int defaultMoney = 200;
 
     private void Awake()
     {
@@ -16,23 +16,23 @@ public class PlayerPrefsManager : MonoBehaviour
         }
     }
 
-    //GOLD
-    public void IncreaseGold(int amount)
+    //Money
+    public void IncreaseMoney(int amount)
     {
-        defaultGold = GetGold();
-        defaultGold += amount;
-        PlayerPrefs.SetInt("Gold", defaultGold);
+        defaultMoney = GetMoney();
+        defaultMoney += amount;
+        PlayerPrefs.SetInt("Money", defaultMoney);
     }
 
-    public void DecreaseGold(int amount)
+    public void DecreaseMoney(int amount)
     {
-        defaultGold = GetGold();
-        defaultGold += amount;
-        PlayerPrefs.SetInt("Gold", defaultGold);
+        defaultMoney = GetMoney();
+        defaultMoney += amount;
+        PlayerPrefs.SetInt("Money", defaultMoney);
     }
 
-    public int GetGold()
+    public int GetMoney()
     {
-        return PlayerPrefs.GetInt("Gold", defaultGold);
+        return PlayerPrefs.GetInt("Money", defaultMoney);
     }
 }
