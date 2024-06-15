@@ -77,13 +77,14 @@ public class Printer : MonoBehaviour
         Transform targetPoint = paperPoints[paperCount % paperPoints.Length];
         Vector3 targetPosition = targetPoint.position + new Vector3(0, (paperCount / paperPoints.Length) * paperHeight, 0);
 
-        newPaper.transform.DOMove(targetPosition, 1f).SetEase(Ease.OutQuad).OnComplete(() =>
-        {
-            // Gerekirse buraya kaðýt hedef konumuna ulaþtýðýnda yapýlacak iþlemleri ekleyin
-        });
+        newPaper.transform.DOMove(targetPosition, 1f).SetEase(Ease.OutQuad);
 
         paperCount++;
+
     }
+
+
+
 
     private void OnTriggerStay(Collider other)
     {
@@ -104,28 +105,29 @@ public class Printer : MonoBehaviour
             if (paper.activeInHierarchy)
             {
                 papersToCollect.Add(paper);
+                //DOVirtual.DelayedCall(0.5f, () => papersToCollect.Add(paper));
             }
         }
+        papersToCollect.Reverse(); //son giren ilk çýksýn diye..
 
         int collectedPaperCount = 0;
 
         foreach (var paper in papersToCollect)
         {
             Vector3 targetPosition = carryingPoint.position + new Vector3(0, collectedPaperCount * paperHeight, 0);
-            paper.transform.DOJump(targetPosition, 2f, 1, 0.5f).SetEase(Ease.InOutQuad).OnComplete(() =>
-            {
-                // Kaðýdý taþýma noktasýna (carryingPoint) sabitle ve düzenli bir þekil almasýný saðla
-                paper.transform.SetParent(carryingPoint);
-                paper.transform.localPosition = new Vector3(0, collectedPaperCount * paperHeight, 0);
-            });
+            int currentPaperCount = collectedPaperCount;
             collectedPaperCount++;
+            paper.transform.DOJump(targetPosition, 0.4f, 1, 0.25f).SetEase(Ease.InOutQuad).OnComplete(() =>
+            {
+                paper.transform.SetParent(carryingPoint);
+                paper.transform.localPosition = new Vector3(0, (currentPaperCount - 1 ) * paperHeight, 0);
+            });
 
-            yield return new WaitForSeconds(0.1f); // Kaðýtlar arasýnda küçük bir gecikme ekleyerek sýralý toplama efekti
+            yield return new WaitForSeconds(0.1f);
         }
+
+        paperCount = 0;
     }
-
-
-
 
 
 }
