@@ -15,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 moveValue;
     private Vector3 velocity;
 
+    public Transform paperPoint;
+
     public bool isCarrying;
 
 
