@@ -13,10 +13,8 @@ public class Printer : MonoBehaviour
     [SerializeField] private float paperInterval = 0.5f;
     [SerializeField] private float paperHeight = 0.02f;
 
-    private PlayerMovement player;
+    private Player player;
     private bool isPlayerIn;
-    private int collectedPaperCount = 0;
-    private int maxPapers = 10;
 
     private List<GameObject> paperPool;
     private List<GameObject> producedPapers;
@@ -68,7 +66,7 @@ public class Printer : MonoBehaviour
         {
             yield return new WaitForSeconds(paperInterval);
 
-            if (isPlayerIn && collectedPaperCount < maxPapers)
+            if (isPlayerIn && player.collectedPaperCount < player.maxPapers)
             {
                 CollectPaper();
             }
@@ -89,7 +87,7 @@ public class Printer : MonoBehaviour
         Transform targetPoint = paperPoints[currentIndex];
         Vector3 targetPosition = targetPoint.position + new Vector3(0, (instantiatedObj / paperPoints.Count) * paperHeight, 0);
 
-        newPaper.transform.DOMove(targetPosition, 0.25f).OnComplete(() => { });
+        newPaper.transform.DOMove(targetPosition, 0.25f);
         instantiatedObj++;
         currentIndex = (currentIndex + 1) % paperPoints.Count;
     }
@@ -112,8 +110,12 @@ public class Printer : MonoBehaviour
         }
 
         newPaper.transform.SetParent(player.transform);
-        newPaper.transform.DOLocalJump(paperPoint + new Vector3(0, collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
-        collectedPaperCount++;
+        newPaper.transform.DOLocalJump(paperPoint + new Vector3(0, player.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
+        player.collectedPapers.Add(newPaper);
+        player.collectedPaperCount++;
+
+        // Remove the paper from other lists
+        paperPool.Remove(newPaper);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -121,18 +123,23 @@ public class Printer : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerIn = true;
-            player = other.GetComponent<PlayerMovement>();
+            player = other.GetComponent<Player>();
             player.isCarrying = true;
 
             var paperPoint = player.paperPoint.localPosition;
             for (int i = producedPapers.Count - 1; i >= 0; i--)
             {
-                if (collectedPaperCount < maxPapers)
+                if (player.collectedPaperCount < player.maxPapers)
                 {
                     var paper = producedPapers[i];
                     paper.transform.SetParent(player.transform);
-                    paper.transform.DOLocalJump(paperPoint + new Vector3(0, collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
-                    collectedPaperCount++;
+                    paper.transform.DOLocalJump(paperPoint + new Vector3(0, player.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
+                    player.collectedPapers.Add(paper);
+                    player.collectedPaperCount++;
+
+                    // Remove the paper from other lists
+                    producedPapers.RemoveAt(i);
+                    paperPool.Remove(paper);
                 }
             }
         }

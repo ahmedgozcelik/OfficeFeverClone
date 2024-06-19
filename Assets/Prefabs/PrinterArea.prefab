@@ -354,12 +354,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1018.1687, y: 1636.1608, z: 1673.1638}
-  m_Center: {x: 59.377975, y: 820.2233, z: -5.7117615}
+  m_Size: {x: 1060.7151, y: 654.118, z: 1742.2858}
+  m_Center: {x: 1384.8734, y: 361.7234, z: 115.547554}
 --- !u!114 &3675151138964459591
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 813cc896374cbcc4e87a9b638d284eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  paperPrefab: {fileID: 2325290074444393804, guid: b5db2ba9fd0659d46b20324881555f52, type: 3}
+  paperPrefab: {fileID: 5468404246345532368, guid: adcb7e179578f7447a9fc24528632477, type: 3}
   paperPoints:
   - {fileID: 7014400040715125803}
   - {fileID: 2855275397715396253}
@@ -385,6 +385,7 @@ MonoBehaviour:
   - {fileID: 4269325543943047052}
   - {fileID: 5274215779291555447}
   printerExitPoint: {fileID: 7516652929050524198}
+  poolSize: 10
   paperInterval: 1
   paperHeight: 0.05
 --- !u!1 &2456643917708725202
@@ -564,7 +565,7 @@ GameObject:
   - component: {fileID: 7434763435917860098}
   - component: {fileID: 269969910688622340}
   - component: {fileID: 1813282217062844155}
-  - component: {fileID: 4851625284681624468}
+  - component: {fileID: 1212480073656762964}
   m_Layer: 0
   m_Name: coffeTable
   m_TagString: Untagged
@@ -648,7 +649,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4851625284681624468
+--- !u!65 &1212480073656762964
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -667,8 +668,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.74431515, y: 0.59181046, z: 1.4886303}
-  m_Center: {x: 0.039902523, y: 0.29590517, z: 0.0000002682209}
+  m_Size: {x: 0.82945216, y: 0.59181046, z: 1.5697029}
+  m_Center: {x: 0.038326144, y: 0.29590517, z: 0.0014686584}
 --- !u!1 &3366054833858236361
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,6 +1125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6907141779893431987}
+  - component: {fileID: 8737104465710363763}
   m_Layer: 0
   m_Name: PrinterArea
   m_TagString: Untagged
@@ -1148,3 +1150,24 @@ Transform:
   - {fileID: 7434763435917860098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!65 &8737104465710363763
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8961018023552275257}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.1791794, y: 1, z: 1.2350081}
+  m_Center: {x: 0.08958991, y: 0.79000014, z: 0.11750447}

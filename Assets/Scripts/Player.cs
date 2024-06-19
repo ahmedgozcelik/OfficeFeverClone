@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     private PlayerInput playerInput;
     private CharacterController characterController;
@@ -16,8 +16,10 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
 
     public Transform paperPoint;
-
+    public List<GameObject> collectedPapers = new List<GameObject>();
     public bool isCarrying;
+    public int maxPapers = 10;
+    public int collectedPaperCount = 0;
 
 
     private void Awake()
