@@ -13,67 +13,83 @@ public class Worker : MonoBehaviour
     [SerializeField] private GameObject moneyPrefab;
     [SerializeField] private List<Transform> moneyPoints = new List<Transform>();
 
-    private int droppedPaperCount = 0; //býrakýlan kaðýt sayýsý
-    private int currentIndex = 0;
-    private int producedMoneyCount = 0;
-    private int a = 0;
-    private float moneyHeight = 0.2f;
+    private List<GameObject> papersOnTable = new List<GameObject>();
+
+    private int droppedPaperCount = 0; // býrakýlan kaðýt sayýsý
+    private int currentMoneyIndex = 0;
+    private int moneyStackHeight = 0;
+    private const float MoneyHeight = 0.2f;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             player = other.GetComponent<Player>();
-            DropThePapers();
+            DropPapersFromPlayer();
             StartCoroutine(ProduceMoney());
         }
     }
 
-    private void DropThePapers()
+    private void DropPapersFromPlayer()
     {
         player.isCarrying = false;
-        int x = player.collectedPapers.Count;
+        int paperCount = player.collectedPapers.Count;
 
-        for (int i = 0; i < x; i++)
+        for (int i = 0; i < paperCount; i++)
         {
-            int indexCount = player.collectedPapers.Count;
-            var lastPaper = player.collectedPapers[indexCount - 1];
-
-            lastPaper.transform.DOJump(paperPoint.transform.position + new Vector3(0, droppedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
-            lastPaper.transform.rotation = Quaternion.identity;
-            lastPaper.transform.SetParent(gameObject.transform);
-
-            player.collectedPapers.RemoveAt(indexCount - 1);
-            droppedPaperCount++;
+            DropSinglePaper();
         }
         player.collectedPaperCount = 0;
     }
 
+    private void DropSinglePaper()
+    {
+        int lastIndex = player.collectedPapers.Count - 1;
+        var lastPaper = player.collectedPapers[lastIndex];
+
+        Vector3 targetPosition = paperPoint.position + new Vector3(0, droppedPaperCount * 0.1f, 0);
+        lastPaper.transform.DOJump(targetPosition, 5f, 1, 1f).SetEase(Ease.OutQuad);
+        lastPaper.transform.rotation = Quaternion.identity;
+        lastPaper.transform.SetParent(transform);
+
+        player.collectedPapers.RemoveAt(lastIndex);
+        droppedPaperCount++;
+        papersOnTable.Add(lastPaper);
+    }
+
     private IEnumerator ProduceMoney()
     {
-        while (true)
+        while (droppedPaperCount > 0)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1f);
 
-            Transform targetPoint = moneyPoints[currentIndex];
-            Vector3 targetPosition = targetPoint.position + new Vector3(0, a * moneyHeight, 0);
+            ProduceSingleMoney();
 
-            GameObject producedMoney = Instantiate(moneyPrefab, targetPosition, Quaternion.identity);
-            producedMoney.transform.rotation = targetPoint.localRotation;
-
-            currentIndex++;
-            producedMoneyCount++;
             droppedPaperCount--;
-
-            if(currentIndex >= moneyPoints.Count)
-            {
-                a++;
-                currentIndex = 0;
-            }
-
-            if(droppedPaperCount == 0)
-            {
-                break;
-            }
+            HideAndRemoveLastPaper();
         }
+    }
+
+    private void ProduceSingleMoney()
+    {
+        Transform targetPoint = moneyPoints[currentMoneyIndex];
+        Vector3 targetPosition = targetPoint.position + new Vector3(0, moneyStackHeight * MoneyHeight, 0);
+
+        GameObject producedMoney = Instantiate(moneyPrefab, targetPosition, Quaternion.identity);
+        producedMoney.transform.rotation = targetPoint.localRotation;
+
+        currentMoneyIndex++;
+        if (currentMoneyIndex >= moneyPoints.Count)
+        {
+            moneyStackHeight++;
+            currentMoneyIndex = 0;
+        }
+    }
+
+    private void HideAndRemoveLastPaper()
+    {
+        var lastPaper = papersOnTable[papersOnTable.Count - 1];
+        lastPaper.SetActive(false);
+        papersOnTable.RemoveAt(papersOnTable.Count - 1);
     }
 }
