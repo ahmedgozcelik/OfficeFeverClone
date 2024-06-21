@@ -1217,8 +1217,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  isCarrying: 0
   gravity: -9.81
+  paperPoint: {fileID: 0}
+  collectedPapers: []
+  isCarrying: 0
+  maxPapers: 10
+  collectedPaperCount: 0
 --- !u!114 &5458062079111072656
 MonoBehaviour:
   m_ObjectHideFlags: 0
