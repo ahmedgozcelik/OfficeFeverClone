@@ -26,10 +26,9 @@ public class Money : MonoBehaviour
 
     private void CollectMoney()
     {
-        Vector3 targetPoint = player.paperPoint.transform.localPosition;
+        Vector3 targetPoint = player.paperPoint.transform.position;
 
-        gameObject.transform.SetParent(player.paperPoint);
-        gameObject.transform.DOLocalMove(targetPoint, 1f).SetEase(Ease.OutQuad).OnComplete(() =>
+        gameObject.transform.DOMove(targetPoint, 0.2f).SetEase(Ease.OutQuad).OnComplete(() =>
         {
             playerPrefsManager.IncreaseMoney(moneyValue);
             Destroy(gameObject);

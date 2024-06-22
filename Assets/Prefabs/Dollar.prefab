@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f38f6e7b1b971348ac49891a2f51781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moneyValue: 10
 --- !u!65 &1931955160758886538
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -116,5 +117,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.63286406, y: 0.54403317, z: 0.32231465}
-  m_Center: {x: 0.00014653207, y: 0.1997429, z: 0.0015435697}
+  m_Size: {x: 0.924277, y: 0.54403317, z: 0.6582595}
+  m_Center: {x: 0.0066727162, y: 0.1997429, z: 0.008584619}
