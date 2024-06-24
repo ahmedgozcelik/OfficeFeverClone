@@ -13,11 +13,17 @@ public class Printer : MonoBehaviour
     [SerializeField] private float paperInterval = 0.5f;
     [SerializeField] private float paperHeight = 0.02f;
 
+
     private Player player;
     private bool isPlayerIn;
 
+    private BotAI botAI;
+    public Transform aiPaperPoint;
+    private bool isBotIn;
+
     private List<GameObject> paperPool;
     private List<GameObject> producedPapers;
+    public int producedPaperCount = 0; // Üretilen kaðýt sayýsý
     private int instantiatedObj = 1;
     private int currentIndex = 0;
 
@@ -68,7 +74,11 @@ public class Printer : MonoBehaviour
 
             if (isPlayerIn && player.collectedPaperCount < player.maxPapers)
             {
-                CollectPaper();
+                CollectPaperForPlayer();
+            }
+            else if (isBotIn && botAI != null && !botAI.isCarrying)
+            {
+                CollectPaperForBot();
             }
             else
             {
@@ -90,9 +100,11 @@ public class Printer : MonoBehaviour
         newPaper.transform.DOMove(targetPosition, 0.25f);
         instantiatedObj++;
         currentIndex = (currentIndex + 1) % paperPoints.Count;
+
+        producedPaperCount++; // Üretilen kaðýt sayýsýný artýr
     }
 
-    private void CollectPaper()
+    private void CollectPaperForPlayer()
     {
         var paperPoint = player.paperPoint.localPosition;
         GameObject newPaper;
@@ -113,10 +125,34 @@ public class Printer : MonoBehaviour
         newPaper.transform.DOLocalJump(paperPoint + new Vector3(0, player.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
         player.collectedPapers.Add(newPaper);
         player.collectedPaperCount++;
-
-        // Remove the paper from other lists
-        paperPool.Remove(newPaper);
+        //// Remove the paper from other lists
+        //paperPool.Remove(newPaper);
     }
+
+    private void CollectPaperForBot()
+    {
+        var paperPoint = botAI.paperPoint.localPosition;
+        GameObject newPaper;
+
+        if (producedPapers.Count == 0)
+        {
+            newPaper = GetPaperFromPool();
+            newPaper.transform.position = printerExitPoint.position;
+            newPaper.transform.localScale = paperPrefab.transform.localScale * 3;
+        }
+        else
+        {
+            newPaper = producedPapers[producedPapers.Count - 1];
+            producedPapers.RemoveAt(producedPapers.Count - 1);
+        }
+
+        newPaper.transform.SetParent(botAI.transform);
+        newPaper.transform.DOLocalJump(paperPoint + new Vector3(0, botAI.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
+        botAI.collectedPapers.Add(newPaper);
+        botAI.collectedPaperCount++;
+        botAI.hasPaper = true;
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -137,9 +173,31 @@ public class Printer : MonoBehaviour
                     player.collectedPapers.Add(paper);
                     player.collectedPaperCount++;
 
-                    // Remove the paper from other lists
                     producedPapers.RemoveAt(i);
                     paperPool.Remove(paper);
+                }
+            }
+        }
+        else if (other.CompareTag("AI"))
+        {
+            isBotIn = true;
+            botAI = other.GetComponent<BotAI>();
+            botAI.isCarrying = true;
+
+            var paperPoint = botAI.paperPoint.localPosition;
+            for (int i = producedPapers.Count - 1; i >= 0; i--)
+            {
+                if (botAI.collectedPaperCount < botAI.botMaxPapers)
+                {
+                    var paper = producedPapers[i];
+                    paper.transform.SetParent(botAI.transform);
+                    paper.transform.DOLocalJump(paperPoint + new Vector3(0, botAI.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
+                    botAI.collectedPapers.Add(paper);
+                    botAI.collectedPaperCount++;
+
+                    producedPapers.RemoveAt(i);
+                    paperPool.Remove(paper);
+                    botAI.hasPaper = true;
                 }
             }
         }
@@ -151,5 +209,15 @@ public class Printer : MonoBehaviour
         {
             isPlayerIn = false;
         }
+        else if (other.CompareTag("AI"))
+        {
+            isBotIn = false;
+            botAI.hasPaper = false;
+        }
+    }
+
+    public int GetProducedPaperCount()
+    {
+        return producedPaperCount;
     }
 }

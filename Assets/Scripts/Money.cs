@@ -5,13 +5,16 @@ using DG.Tweening;
 
 public class Money : MonoBehaviour
 {
-    PlayerPrefsManager playerPrefsManager;
-    Player player;
+    private PlayerPrefsManager playerPrefsManager;
+    private Player player;
+    private Worker worker;
 
     [SerializeField] private int moneyValue = 10;
+
     private void Start()
     {
         playerPrefsManager = PlayerPrefsManager.instance;
+        worker = FindObjectOfType<Worker>(); 
     }
 
     private void OnTriggerEnter(Collider other)
@@ -32,6 +35,7 @@ public class Money : MonoBehaviour
         {
             playerPrefsManager.IncreaseMoney(moneyValue);
             Destroy(gameObject);
+            worker.ResetMoneyStackHeight(); // yýðýn yüksekliðini sýfýrla, üstten üretmeye baþlamasýn.
         });
     }
 }

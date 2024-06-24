@@ -7,18 +7,30 @@ using DG.Tweening;
 public class BotAI : MonoBehaviour
 {
     private NavMeshAgent agent;
+    private Animator botAnimator;
 
-    public Transform paperLocation;
-    public Transform dropOffLocation;
+    public Transform paperPoint; // kaðýtlarý eli ile tuttuðu nokta
+    public int collectedPaperCount = 0;
+    public int botMaxPapers = 5;
+    public List<GameObject> collectedPapers;
+    public bool hasPaper = false;
+    public bool isCarrying = false;
 
-    private bool hasPaper = false;
+    private Worker[] workers;
+    private Printer[] printers;
+
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        botAnimator = GetComponent<Animator>();
+        workers = FindObjectsOfType<Worker>(); // Tüm worker nesnelerini bul
+        printers = FindObjectsOfType<Printer>(); // Tüm printer nesnelerini bul
+        GoToBestPrinter();
     }
 
     private void Update()
     {
+        UpdateAnimations();
         if (!hasPaper && agent.remainingDistance < 0.5f)
         {
             PickUpPaper();
@@ -29,26 +41,84 @@ public class BotAI : MonoBehaviour
         }
     }
 
-    private void GoToPaper()
+    private void GoToBestPrinter()
     {
-        agent.SetDestination(paperLocation.position);
+        Printer bestPrinter = GetPrinterWithMostPapers();
+        if (bestPrinter != null)
+        {
+            agent.SetDestination(bestPrinter.aiPaperPoint.position);
+        }
+    }
+
+    private Printer GetPrinterWithMostPapers()
+    {
+        Printer bestPrinter = null;
+        int maxPapers = 0;
+
+        foreach (var printer in printers)
+        {
+            int paperCount = printer.GetProducedPaperCount();
+            if (paperCount > maxPapers)
+            {
+                maxPapers = paperCount;
+                bestPrinter = printer;
+            }
+        }
+
+        return bestPrinter;
+    }
+
+    private void GoToBestWorker()
+    {
+        Worker bestWorker = GetWorkerWithLeastPapers();
+        if (bestWorker != null)
+        {
+            agent.SetDestination(bestWorker.aiDropOffPoint.position);
+        }
+    }
+
+    private Worker GetWorkerWithLeastPapers()
+    {
+        Worker bestWorker = null;
+        int minPapers = int.MaxValue;
+
+        foreach (var worker in workers)
+        {
+            int paperCount = worker.GetDroppedPaperCount();
+            if (paperCount < minPapers)
+            {
+                minPapers = paperCount;
+                bestWorker = worker;
+            }
+        }
+
+        return bestWorker;
     }
 
     private void PickUpPaper()
     {
-
         hasPaper = true;
-        GoToDropOff();
-    }
-
-    private void GoToDropOff()
-    {
-        agent.SetDestination(dropOffLocation.position);
+        GoToBestPrinter();
     }
 
     private void DropOffPaper()
     {
         hasPaper = false;
-        GoToPaper();
+        GoToBestWorker();
+    }
+
+
+    private void UpdateAnimations()
+    {
+        if (isCarrying == true)
+        {
+            botAnimator.SetBool("IsRunning", false);
+            botAnimator.SetBool("IsCarrying", true);
+        }
+        else
+        {
+            botAnimator.SetBool("IsCarrying", false);
+            botAnimator.SetBool("IsRunning", true);
+        }
     }
 }

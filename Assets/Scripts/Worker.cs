@@ -7,6 +7,7 @@ using DG.Tweening;
 public class Worker : MonoBehaviour
 {
     private Player player;
+    private BotAI bot;
 
     [SerializeField] private Animator workerAnimator;
     [SerializeField] private Transform paperPoint;
@@ -15,7 +16,9 @@ public class Worker : MonoBehaviour
 
     private List<GameObject> papersOnTable = new List<GameObject>();
 
-    private int droppedPaperCount = 0; // býrakýlan kaðýt sayýsý
+    public Transform aiDropOffPoint;
+
+    public int droppedPaperCount = 0; // býrakýlan kaðýt sayýsý
     private int currentMoneyIndex = 0;
     private int moneyStackHeight = 0;
     private const float MoneyHeight = 0.2f;
@@ -28,6 +31,12 @@ public class Worker : MonoBehaviour
             DropPapersFromPlayer();
             StartCoroutine(ProduceMoney());
         }
+        else if (other.CompareTag("AI"))
+        {
+            bot = other.GetComponent<BotAI>();
+            DropPapersFromBot();
+            StartCoroutine(ProduceMoney());
+        }
     }
 
     private void DropPapersFromPlayer()
@@ -37,12 +46,12 @@ public class Worker : MonoBehaviour
 
         for (int i = 0; i < paperCount; i++)
         {
-            DropSinglePaper();
+            DropSinglePaperFromPlayer();
         }
         player.collectedPaperCount = 0;
     }
 
-    private void DropSinglePaper()
+    private void DropSinglePaperFromPlayer()
     {
         int lastIndex = player.collectedPapers.Count - 1;
         var lastPaper = player.collectedPapers[lastIndex];
@@ -53,6 +62,33 @@ public class Worker : MonoBehaviour
         lastPaper.transform.SetParent(transform);
 
         player.collectedPapers.RemoveAt(lastIndex);
+        droppedPaperCount++;
+        papersOnTable.Add(lastPaper);
+    }
+
+    private void DropPapersFromBot()
+    {
+        bot.isCarrying = false;
+        int paperCount = bot.collectedPapers.Count;
+
+        for (int i = 0; i < paperCount; i++)
+        {
+            DropSinglePaperFromBot();
+        }
+        bot.collectedPaperCount = 0;
+    }
+
+    private void DropSinglePaperFromBot()
+    {
+        int lastIndex = bot.collectedPapers.Count - 1;
+        var lastPaper = bot.collectedPapers[lastIndex];
+
+        Vector3 targetPosition = paperPoint.position + new Vector3(0, droppedPaperCount * 0.1f, 0);
+        lastPaper.transform.DOJump(targetPosition, 5f, 1, 1f).SetEase(Ease.OutQuad);
+        lastPaper.transform.rotation = Quaternion.identity;
+        lastPaper.transform.SetParent(transform);
+
+        bot.collectedPapers.RemoveAt(lastIndex);
         droppedPaperCount++;
         papersOnTable.Add(lastPaper);
     }
@@ -91,5 +127,16 @@ public class Worker : MonoBehaviour
         var lastPaper = papersOnTable[papersOnTable.Count - 1];
         lastPaper.SetActive(false);
         papersOnTable.RemoveAt(papersOnTable.Count - 1);
+    }
+
+    public void ResetMoneyStackHeight()
+    {
+        moneyStackHeight = 0;
+        currentMoneyIndex = 0;
+    }
+
+    public int GetDroppedPaperCount()
+    {
+        return droppedPaperCount;
     }
 }
