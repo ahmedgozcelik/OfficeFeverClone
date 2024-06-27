@@ -8,6 +8,7 @@ public class Money : MonoBehaviour
     private PlayerPrefsManager playerPrefsManager;
     private Player player;
     private Worker worker;
+    private Automat automat;
 
     [SerializeField] private int moneyValue = 10;
 
@@ -15,6 +16,7 @@ public class Money : MonoBehaviour
     {
         playerPrefsManager = PlayerPrefsManager.instance;
         worker = FindObjectOfType<Worker>(); 
+        automat = FindObjectOfType<Automat>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -23,6 +25,7 @@ public class Money : MonoBehaviour
         {
             var player = other.GetComponent<Player>();
             this.player = player;
+            automat.RemoveMoney(gameObject);
             CollectMoney();
         }
     }

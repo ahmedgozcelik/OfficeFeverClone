@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6789749118608061725
 Transform:
   m_ObjectHideFlags: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   lockedObject: {fileID: 0}
   progressImage: {fileID: 2737142606207506009}
   priceText: {fileID: 6655817889378151167}
-  price: 200
+  price: 50
 --- !u!33 &50727534693527149
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -23,9 +23,10 @@ public class Printer : MonoBehaviour
 
     private List<GameObject> paperPool;
     private List<GameObject> producedPapers;
-    public int producedPaperCount = 0; // Üretilen kaðýt sayýsý
+    public int producedPaperCount = 0;
     private int instantiatedObj = 1;
     private int currentIndex = 0;
+    private float height = 0;
 
     private void Awake()
     {
@@ -76,7 +77,7 @@ public class Printer : MonoBehaviour
             {
                 CollectPaperForPlayer();
             }
-            else if (isBotIn && botAI != null && !botAI.isCarrying)
+            else if (isBotIn && botAI != null && !botAI.hasPaper)
             {
                 CollectPaperForBot();
             }
@@ -95,13 +96,14 @@ public class Printer : MonoBehaviour
         newPaper.transform.localScale = paperPrefab.transform.localScale * 3;
 
         Transform targetPoint = paperPoints[currentIndex];
-        Vector3 targetPosition = targetPoint.position + new Vector3(0, (instantiatedObj / paperPoints.Count) * paperHeight, 0);
+        Vector3 targetPosition = targetPoint.position + new Vector3(0, (height) * paperHeight, 0);
 
+        height = instantiatedObj / paperPoints.Count;
         newPaper.transform.DOMove(targetPosition, 0.25f);
         instantiatedObj++;
         currentIndex = (currentIndex + 1) % paperPoints.Count;
 
-        producedPaperCount++; // Üretilen kaðýt sayýsýný artýr
+        producedPaperCount++;
     }
 
     private void CollectPaperForPlayer()
@@ -131,6 +133,12 @@ public class Printer : MonoBehaviour
 
     private void CollectPaperForBot()
     {
+        // kaðýt sayýsý max ise daha fazla toplamamasý için
+        if (botAI.collectedPaperCount >= botAI.botMaxPapers)
+        {
+            return;
+        }
+
         var paperPoint = botAI.paperPoint.localPosition;
         GameObject newPaper;
 
@@ -172,11 +180,13 @@ public class Printer : MonoBehaviour
                     paper.transform.DOLocalJump(paperPoint + new Vector3(0, player.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
                     player.collectedPapers.Add(paper);
                     player.collectedPaperCount++;
+                    producedPaperCount--;
 
                     producedPapers.RemoveAt(i);
                     paperPool.Remove(paper);
                 }
             }
+            height = instantiatedObj / paperPoints.Count;
         }
         else if (other.CompareTag("AI"))
         {
@@ -194,12 +204,14 @@ public class Printer : MonoBehaviour
                     paper.transform.DOLocalJump(paperPoint + new Vector3(0, botAI.collectedPaperCount * 0.1f, 0), 5f, 1, 1f).SetEase(Ease.OutQuad);
                     botAI.collectedPapers.Add(paper);
                     botAI.collectedPaperCount++;
+                    producedPaperCount--;
 
                     producedPapers.RemoveAt(i);
                     paperPool.Remove(paper);
                     botAI.hasPaper = true;
                 }
             }
+            height = instantiatedObj / paperPoints.Count;
         }
     }
 

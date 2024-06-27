@@ -23,8 +23,10 @@ public class BotAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         botAnimator = GetComponent<Animator>();
-        workers = FindObjectsOfType<Worker>(); // Tüm worker nesnelerini bul
-        printers = FindObjectsOfType<Printer>(); // Tüm printer nesnelerini bul
+
+        workers = FindObjectsOfType<Worker>(); 
+        printers = FindObjectsOfType<Printer>(); 
+
         GoToBestPrinter();
     }
 

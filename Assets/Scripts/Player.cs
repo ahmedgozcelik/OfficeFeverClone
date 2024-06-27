@@ -83,17 +83,6 @@ public class Player : MonoBehaviour
     {
         bool isRunning = moveValue != Vector2.zero;
 
-        //if (isCarrying)
-        //{
-        //    playerAnimator.SetBool("IsRunning", false);
-        //    playerAnimator.SetBool("IsCarrying", isRunning);
-        //}
-        //else
-        //{
-        //    playerAnimator.SetBool("IsRunning", isRunning);
-        //    playerAnimator.SetBool("IsCarrying", false);
-        //}
-
         if (isCarrying)
         {
             if (moveValue != Vector2.zero)
