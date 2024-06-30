@@ -12,10 +12,11 @@ public class Automat : MonoBehaviour
 
     private float height = 0.130f;
     private int producedMoneyCount = 0;
+    public float produceMoneyTime = 2f;
 
     private void Start()
     {
-        InvokeRepeating(nameof(ProduceMoney), 0f, 2f);
+        InvokeRepeating(nameof(ProduceMoney), 0f, produceMoneyTime);
     }
 
     private void ProduceMoney()
