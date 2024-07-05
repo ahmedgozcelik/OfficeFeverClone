@@ -98,10 +98,10 @@ public class Printer : MonoBehaviour
         Transform targetPoint = paperPoints[currentIndex];
         Vector3 targetPosition = targetPoint.position + new Vector3(0, (height) * paperHeight, 0);
 
-        height = instantiatedObj / paperPoints.Count;
         newPaper.transform.DOMove(targetPosition, 0.25f);
-        instantiatedObj++;
+        height = instantiatedObj / paperPoints.Count;
         currentIndex = (currentIndex + 1) % paperPoints.Count;
+        instantiatedObj++;
 
         producedPaperCount++;
     }
@@ -186,6 +186,9 @@ public class Printer : MonoBehaviour
                     paperPool.Remove(paper);
                 }
             }
+            var indexCalculation = player.collectedPaperCount % paperPoints.Count;
+            currentIndex -= indexCalculation;
+            instantiatedObj -= player.collectedPaperCount;
             height = instantiatedObj / paperPoints.Count;
         }
         else if (other.CompareTag("AI"))
@@ -211,6 +214,9 @@ public class Printer : MonoBehaviour
                     botAI.hasPaper = true;
                 }
             }
+            var indexCalculation = player.collectedPaperCount % paperPoints.Count;
+            currentIndex -= indexCalculation;
+            instantiatedObj -= player.collectedPaperCount;
             height = instantiatedObj / paperPoints.Count;
         }
     }

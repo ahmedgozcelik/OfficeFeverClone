@@ -6,7 +6,7 @@ public class PlayerPrefsManager : MonoBehaviour
 {
     public static PlayerPrefsManager instance;
 
-    private int defaultMoney = 200;
+    private int defaultMoney = 1000;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class PlayerPrefsManager : MonoBehaviour
     public void DecreaseMoney(int amount)
     {
         defaultMoney = GetMoney();
-        defaultMoney += amount;
+        defaultMoney -= amount;
         PlayerPrefs.SetInt("Money", defaultMoney);
     }
 

@@ -15,7 +15,7 @@ public class Money : MonoBehaviour
     private void Start()
     {
         playerPrefsManager = PlayerPrefsManager.instance;
-        worker = FindObjectOfType<Worker>(); 
+        worker = FindObjectOfType<Worker>();
         automat = FindObjectOfType<Automat>();
     }
 
@@ -25,7 +25,10 @@ public class Money : MonoBehaviour
         {
             var player = other.GetComponent<Player>();
             this.player = player;
-            automat.RemoveMoney(gameObject);
+            if (automat != null)
+            {
+                automat.RemoveMoney(gameObject);
+            }
             CollectMoney();
         }
     }
